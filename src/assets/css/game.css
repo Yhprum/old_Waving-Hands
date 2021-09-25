@@ -1,0 +1,63 @@
+.game {
+  display: flex;
+  height: 100vh;
+}
+
+.game-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.history-section {
+  width: 500px;
+  border-left: 1px solid lightgrey;
+}
+
+.game-selection {
+  display: flex;
+  margin-top: auto;
+  height: 350px;
+  border-top: 1px solid lightgrey;
+}
+
+.game-moves {
+  width: 50%;
+}
+
+.game-spells {
+  width: 50%;
+  border-left: 1px solid lightgrey;
+}
+
+.spell {
+  text-align: start;
+  font-size: 11px;
+  column-width: 200px;
+}
+
+.btn-matrix {
+  flex-wrap: wrap;
+}
+.btn-matrix > .btn {
+  width: 25%;
+}
+.btn-matrix > .btn:nth-child(4n+5) {
+  margin-left: 0;
+}
+.btn-matrix > .btn:nth-child(n+5) {
+  margin-top: -1px;
+}
+
+.btn-matrix > .btn:first-child {
+  border-bottom-left-radius: 0;
+}
+.btn-matrix > .btn:nth-child(4) {
+  border-top-right-radius: 4px !important;
+}
+.btn-matrix > .btn:nth-last-child(4) {
+  border-bottom-left-radius: 4px !important;
+}
+.btn-matrix > .btn:last-child {
+  border-top-right-radius: 0;
+}
