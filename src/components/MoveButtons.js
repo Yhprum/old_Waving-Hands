@@ -1,6 +1,7 @@
 import React, {useEffect} from "react";
 import { Button, ButtonGroup, FormControl } from "react-bootstrap";
 import spells from "../data/spells";
+import { spellTarget } from "../data/spellUtils";
 
 function MoveButtons(props) {
 
@@ -8,8 +9,12 @@ function MoveButtons(props) {
     let spellOptions = spells.filter(spell => (props.history.join("") + props.selected).endsWith(spell.sequence)).sort((a, b)=> b.sequence.length - a.sequence.length);
     props.setSpell(spellOptions[0]?.name);
   }, [props.selected]);
-  let spellOptions = spells.filter(spell => (props.history.join("") + props.selected).endsWith(spell.sequence)).sort((a, b)=> b.sequence.length - a.sequence.length);
 
+  useEffect(() => {
+    if (props.spell) props.setTarget(spellTarget[props.spell]);
+  }, [props.spell]);
+
+  let spellOptions = spells.filter(spell => (props.history.join("") + props.selected).endsWith(spell.sequence)).sort((a, b)=> b.sequence.length - a.sequence.length);
   return (
     <div>
       <ButtonGroup className="btn-matrix">
@@ -22,11 +27,19 @@ function MoveButtons(props) {
         <Button variant={props.selected === ">" ? "secondary" : "outline-secondary"} onClick={() => props.setSelected(">")}>&gt;</Button>
         <Button variant={props.selected === undefined ? "secondary" : "outline-secondary"} onClick={() => props.setSelected(undefined)}/>
       </ButtonGroup>
-      {spellOptions.length !== 0 && <FormControl value={props.spell} onChange={e => props.setSpell(e.target.value)} as="select" className="mt-2">
-        {spellOptions.map(option =>
-          <option key={option.name} value={option.name}>{option.name}</option>
-        )}
-      </FormControl>}
+      {spellOptions.length !== 0 &&
+        <div>
+          <FormControl value={props.spell} onChange={e => props.setSpell(e.target.value)} as="select" className="mt-2">
+            {spellOptions.map(option =>
+              <option key={option.name} value={option.name}>{option.name}</option>
+            )}
+          </FormControl>
+          <FormControl value={props.target} onChange={e => props.setTarget(e.target.value)} as="select" className="mt-2">
+            {Object.keys(props.stats).map(player => <option key={player} value={player}>{player}</option>)}
+            {Object.values(props.stats).map(stat => stat.summons).flat().map(s => <option key={s.type} value={s.type}>{s.type}</option>)}
+          </FormControl>
+        </div>
+      }
     </div>
   );
 }
