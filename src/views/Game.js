@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { SocketContext } from "../context/socket";
 import { Row, Col, Button } from "react-bootstrap";
 import "../assets/css/game.css";
 import GameHistory from "../components/GameHistory";
@@ -7,11 +8,17 @@ import MoveButtons from "../components/MoveButtons";
 import SpellList from "../components/SpellList";
 
 function Game() {
+  const socket = useContext(SocketContext);
   let [selected, setSelected] = useState([]);
   let [spell, setSpell] = useState([]);
   let [target, setTarget] = useState([]);
+  let [state, setState] = useState("choose move");
 
-  let state = {
+  useEffect(() => {
+    socket.emit("test", "pls work pls");
+  }, [socket]);
+
+  let game = {
     history: {
       "you": [["F", "P"], ["P", "W"], ["W", ">"], ["P", "W"], ["F", "W"], ["S", "W"], ["S", "P"], ["S", "S"]],
       "enemy": [["S", "W"], ["S", "W"], ["S", "W"], ["S", "W"], ["S", "W"], ["S", "W"], ["S", "W"], ["S", "W"]]
@@ -31,10 +38,8 @@ function Game() {
   };
 
   function submitMoves() {
-    console.log("--move--");
-    console.log(selected);
-    console.log(spell);
-    console.log(target);
+    socket.emit("submit move", { selected, spell, target });
+    setState("waiting");
   }
 
   return (
@@ -43,10 +48,10 @@ function Game() {
         <div className="game-history">
           past moves
           <Row>
-            <Col><GameHistory name="you" moves={state.history["you"]} /></Col>
-            <Col className="text-start"><GameStats stats={state.stats["you"]} /></Col>
-            <Col className="text-end"><GameStats stats={state.stats["enemy"]} /></Col>
-            <Col><GameHistory name="enemy" moves={state.history["enemy"]} /></Col>
+            <Col><GameHistory name="you" moves={game.history["you"]} /></Col>
+            <Col className="text-start"><GameStats stats={game.stats["you"]} /></Col>
+            <Col className="text-end"><GameStats stats={game.stats["enemy"]} /></Col>
+            <Col><GameHistory name="enemy" moves={game.history["enemy"]} /></Col>
           </Row>
         </div>
         <div className="game-selection">
@@ -55,8 +60,8 @@ function Game() {
               <Col>
                 Right Hand
                 <MoveButtons
-                  history={state.history["you"].map(a=>a[0])}
-                  stats={state.stats}
+                  history={game.history["you"].map(a=>a[0])}
+                  stats={game.stats}
                   selected={selected[0]}
                   setSelected={s => setSelected(old => [s, old[1]])}
                   spell={spell[0]}
@@ -67,8 +72,8 @@ function Game() {
               <Col>
                 Left Hand
                 <MoveButtons
-                  history={state.history["you"].map(a=>a[1])}
-                  stats={state.stats}
+                  history={game.history["you"].map(a=>a[1])}
+                  stats={game.stats}
                   selected={selected[1]}
                   setSelected={s => setSelected(old => [old[0], s])}
                   spell={spell[1]}
@@ -80,7 +85,7 @@ function Game() {
             <Button className="mt-2" onClick={submitMoves}>Submit Moves</Button>
           </div>
           <div className="game-spells">
-            <SpellList history={state.history["you"]} selected={selected} />
+            <SpellList history={game.history["you"]} selected={selected} />
           </div>
         </div>
       </div>
